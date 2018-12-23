@@ -15,5 +15,11 @@ pipeline {
         }
       }
     }
+    stage('Deploy to Staging') {
+      steps {
+        // 'deploy-to-staging is a Jenkins job'
+        build job: 'deploy-to-staging'
+      }
+    }
   }
 }

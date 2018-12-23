@@ -1,1 +1,1 @@
-Hello, World! (by Jenkins)
+Hello, World! (by Jenkins version: Fully automated)

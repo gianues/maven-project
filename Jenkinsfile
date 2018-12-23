@@ -1,46 +1,43 @@
 pipeline {
-  agent any
-  tools {
-    maven 'localMaven'
-  }
-  stages {
-    // Build
-    stage('Build'){
-      steps {
-        sh 'mvn clean package'
-      }
-      post {
-        success {
-          echo 'Now archiving...'
-          archiveArtifacts artifacts: '**/target/*.war'
-        }
-      }
+    agent any
+
+    parameters {
+         string(name: 'tomcat_stage', defaultValue: 'localhost:8090', description: 'Staging Server')
+         string(name: 'tomcat_prod', defaultValue: 'localhost:8095', description: 'Production Server')
     }
-    // Deploy to Staging
-    stage('Deploy to Staging') {
-      steps {
-        // 'deploy-to-staging is a Jenkins job'
-        build job: 'deploy-to-staging'
-      }
+
+    triggers {
+         pollSCM('* * * * *')
+     }
+
+stages{
+        stage('Build'){
+            steps {
+                sh 'mvn clean package'
+            }
+            post {
+                success {
+                    echo 'Now Archiving...'
+                    archiveArtifacts artifacts: '**/target/*.war'
+                }
+            }
+        }
+
+        stage ('Deployments'){
+            parallel{
+                stage ('Deploy to Staging'){
+                    steps {
+                        sh "cp **/target/*.war {params.tomcat_stage}:/Users/gian/Development/servers/apache-tomcat-8.5.37/webapps"
+                    }
+                }
+
+                stage ("Deploy to Production"){
+                    steps {
+                        //sh "scp -i /home/jenkins/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
+                        sh "cp **/target/*.war {params.tomcat_prod}:/Users/gian/Development/servers/apache-tomcat-8.5.37-prod/webapps"
+                    }
+                }
+            }
+        }
     }
-    // Deploy to Production
-    stage('Deploy to Production') {
-      steps {
-        // fails if nobody approves within 5 days
-        timeout(time:5, unit:'DAYS') {
-          input message: 'Approve Production Deployment?'
-        }
-        // 'deploy-to-production is a Jenkins job'
-        build job: 'deploy-to-production'
-      }
-      post {
-        success {
-          echo 'Successfully deployed to production'
-        }
-        failure {
-          echo 'Failed to deploy to production'
-        }
-      }
-    }
-  }
 }

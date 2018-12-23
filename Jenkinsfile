@@ -32,14 +32,14 @@ pipeline {
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "cp **/target/*.war {params.tomcat_stage}/webapps"
+                        sh "cp **/target/*.war ${params.tomcat_stage}/webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
                         //sh "scp -i /home/jenkins/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
-                        sh "cp **/target/*.war {params.tomcat_prod}/webapps"
+                        sh "cp **/target/*.war ${params.tomcat_prod}/webapps"
                     }
                 }
             }

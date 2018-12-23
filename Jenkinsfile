@@ -7,10 +7,11 @@ pipeline {
     }
 
     triggers {
+         // poll every minute
          pollSCM('* * * * *')
-     }
+    }
 
-stages{
+    stages{
         stage('Build'){
             steps {
                 sh 'mvn clean package'

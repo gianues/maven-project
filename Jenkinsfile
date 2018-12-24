@@ -46,22 +46,12 @@ pipeline {
         }
 
         stage ('Analysis'){
-          parallel{
-              stage ('Checkstyle') {
-                steps {
-                  sh 'mvn checkstyle:checkstyle'
-                }
-                post {
-                    success {
-                        echo 'Scanning for checkstyle issues ...'
-                        steps {
-                          def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
-                          publishIssues issues:[checkstyle]
-                        }
-                    }
-                }
-              }
-          }
+          def mvnHome = tool 'mvn-default'
+
+          sh "${mvnHome}/bin/mvn -batch-mode -V -U -e checkstyle:checkstyle"
+
+          def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
+          publishIssues issues:[checkstyle]
         }
     }
 }

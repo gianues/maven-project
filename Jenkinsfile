@@ -45,13 +45,5 @@ pipeline {
             }
         }
 
-        stage ('Analysis'){
-          def mvnHome = tool 'mvn-default'
-
-          sh "${mvnHome}/bin/mvn -batch-mode -V -U -e checkstyle:checkstyle"
-
-          def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
-          publishIssues issues:[checkstyle]
-        }
     }
 }

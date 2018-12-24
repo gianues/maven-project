@@ -44,5 +44,22 @@ pipeline {
                 }
             }
         }
+
+        stage ('Analysis'){
+          parallel{
+              stage ('Checkstyle') {
+                steps {
+                  sh 'mvn checkstyle:checkstyle'
+                }
+                post {
+                    success {
+                        echo 'Scanning for checkstyle issues ...'
+                        def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
+                        publishIssues issues:[checkstyle]
+                    }
+                }
+              }
+          }
+        }
     }
 }

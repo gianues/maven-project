@@ -28,6 +28,17 @@ pipeline {
             }
         }
 
+        stage('Analysis') {
+          steps {
+            sh 'mvn checkstyle:checkstyle'
+          }
+          post {
+            success {
+              checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
+            }
+          }
+        }
+
         stage ('Deployments'){
             parallel{
                 stage ('Deploy to Staging'){
@@ -42,6 +53,7 @@ pipeline {
                         sh "cp **/target/*.war ${params.tomcat_prod}/webapps"
                     }
                 }
+
             }
         }
 

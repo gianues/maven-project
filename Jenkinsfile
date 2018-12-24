@@ -54,8 +54,10 @@ pipeline {
                 post {
                     success {
                         echo 'Scanning for checkstyle issues ...'
-                        def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
-                        publishIssues issues:[checkstyle]
+                        steps {
+                          def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
+                          publishIssues issues:[checkstyle]
+                        }
                     }
                 }
               }

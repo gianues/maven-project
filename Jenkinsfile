@@ -10,8 +10,8 @@ pipeline {
             steps {
                 sh 'mvn clean package'
                 // build in the current dir using the Dockerfile
-                // a container with this tag
-                sh 'docker build . -t tomcatwebapp:${env.BUILD_ID}'
+                // a container with this tag (note the "" instead of '' to be able to use the env.build_id)
+                sh "docker build . -t tomcatwebapp:${env.BUILD_ID}"
             }
         }
     }
